@@ -21,7 +21,7 @@ const WassupSRG = () => {
   React.useEffect(() => {
     const fetchData = async () => {
       try {
-        const genesisBlock = await provider.getBlock(0); // Récupérer le bloc de genèse
+        const genesisBlock = await provider.getBlock(0); //get genesis blockssss
 
         // Check if genesisBlock is define before using for filter and fetch the data
         if (genesisBlock && genesisBlock.timestamp) {
