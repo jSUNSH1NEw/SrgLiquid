@@ -1,80 +1,77 @@
-import React from "react";
+import { useState, useEffect } from "react";
 import { ethers, JsonRpcProvider } from "ethers";
 
-const WassupSRG = () => {
-  const [priceHistory, setPriceHistory] = React.useState([]);
-  const [volumeHistory, setVolumeHistory] = React.useState([]);
-  const [liquidityHistory, setLiquidityHistory] = React.useState([]);
+export const SRGentrys = () => {
+  const [priceHistory, setPriceHistory] = useState([]);
+  const [volumeHistory, setVolumeHistory] = useState([]);
+  const [liquidityHistory, setLiquidityHistory] = useState([]);
+  const [liquidityHistoryByHours, setLiquidityHistoryByHours] = useState([]);
 
-  const tokenAddress = "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65"; //need create a config to avoid these type BRUTAL call  
+  //ANCHOR little spec subgraph of ticker can be only in lowercase, except for the SRG address)
+  const tokenAddress = "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65"; //TODO need create a config to avoid these type BRUTAL call
 
-  const provider = new JsonRpcProvider(
-    "https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID"
-  );
+  const provider = new JsonRpcProvider("https://mainnet.infura.io/v3/"); //TODO use .env
 
-  async function getGenesisBlockNumber() {
-    const genesisBlock = await provider.getBlock(0);
-    console.log(genesisBlock?.number); //IF nul on type make ? to be sure its my provider
-  }
-  getGenesisBlockNumber();
-
-  React.useEffect(() => {
+  //TODO
+  //Store : (24725999: Array with 0 ) (24726900 start block ? )  ("message": "Failed to decode `block.number` value: `subgraph Qmcorg5bdqvpaSAnh16vsAxoqvu8hkCrzu5GKMfEcdn6GB only has data starting at block number 24725999 and data for block number 10 is therefore not available`")
+  //get the first block
+  useEffect(() => {
     const fetchData = async () => {
-      try {
-        const genesisBlock = await provider.getBlock(0); //get genesis blockssss
-
-        // Check if genesisBlock is define before using for filter and fetch the data
-        if (genesisBlock && genesisBlock.timestamp) {
-          const priceResponse = await fetch(
-            "https://api.etherscan.io/api?module=stats&action=tokensupplyhistory&contractaddress=0x43C3EBaFdF32909aC60E80ee34aE46637E743d65"
-          );
-          const priceData = await priceResponse.json();
-          // Filtrer les données en fonction du bloc de genèse
-          const priceHistory = priceData.result
-            .filter(
-              (entry: PriceEntry) =>
-                parseInt(entry.timestamp) >= genesisBlock.timestamp
-            )
-            .map((entry: PriceEntry) => ({
-              timestamp: parseInt(entry.timestamp),
-              price: parseFloat(entry.price),
-            }));
-          setPriceHistory(priceHistory);
-        }
-
-        // if (priceData.status === "1") {
-        //   const priceHistory = priceData.result.map(
-        //     (entry: PriceEntry) => ({
-        //       timestamp: parseInt(entry.timestamp),
-        //       price: parseFloat(entry.price),
-        //     })
-        //   );
-        //   setPriceHistory(priceHistory);
-        // } else {
-        //   console.error("Error fetching price history:", priceData.message);
-        // }
-      } catch (error) {
-        console.error("Error fetching price history:", error);
-      }
+      // try {
+      //   const genesisBlock = await provider.getBlock(0);
+      //  console.log(genesisBlock?.number);
+      //   // Check if genesisBlock is define before using for filter and fetch the data
+      //   if (genesisBlock && genesisBlock.timestamp) {
+      //     const priceResponse = await fetch(
+      //       // TODO Call BSCScan api https://bscscan.com/address/0x43C3EBaFdF32909aC60E80ee34aE46637E743d65
+      //       "https://thegraph.com/hosted-service/subgraph/somemoecoding/surgeswap-v1-eth"
+      //     );
+      //     const priceData = await priceResponse.json();
+      //     // Filtrer les données en fonction du genesis block
+      //     const priceHistory = priceData.result
+      //       .filter(
+      //         (entry: PriceEntry) =>
+      //           parseInt(entry.timestamp) >= genesisBlock.timestamp
+      //       )
+      //       .map((entry: PriceEntry) => ({
+      //         timestamp: parseInt(entry.timestamp),
+      //         price: parseFloat(entry.price),
+      //       }));
+      //     setPriceHistory(priceHistory);
+      //   }
+      // } catch (error) {
+      //   console.error("Error fetching price history:", error);
+      // }
 
       try {
         const volumeResponse = await fetch(
-          "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+          "https://thegraph.com/hosted-service/subgraph/somemoecoding/surgeswap-v1-eth",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               query: `
-              {
-                tokenDayDatas(
-                  where: { token: "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65" }
-                  orderBy: date
-                  orderDirection: desc
-                ) {
-                  date
-                  dailyVolumeToken
+                {
+
+                  token(id: "0x43c3ebafdf32909ac60e80ee34ae46637e743d65",block: {number_gte :0} ) { 
+                    tokenDayData {
+                      totalLiquidityUSD
+                    }
+                    tradeVolumeUSD
+                    totalSupply
+                    id
+                    
+                  } 
+                    tokens(block: {number:24726990}) {
+                    id
+                    tokenDayData {
+                      id
+                      dailyVolumeUSD
+                    }
+                    
+                  }
+                  
                 }
-              }
             `,
             }),
           }
@@ -94,36 +91,44 @@ const WassupSRG = () => {
 
       try {
         const liquidityResponse = await fetch(
-          "https://api.thegraph.com/subgraphs/name/uniswap/uniswap-v2",
+          "https://thegraph.com/hosted-service/subgraph/somemoecoding/surgeswap-v1-eth",
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
               query: `
-              {
-                pairDayDatas(
-                  where: { token0: "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65" }
-                  orderBy: date
-                  orderDirection: desc
-                ) {
-                  date
-                  reserve0
-                  reserve1
-                }
-              }
+                  {
+
+                    token(id: "0x43c3ebafdf32909ac60e80ee34ae46637e743d65",block: {number_gte :0} ) { 
+                      tokenDayData {
+                        totalLiquidityUSD
+                      }
+                      tradeVolumeUSD
+                      totalSupply
+                      id
+                      
+                    } 
+                      tokens(block: {number:24726990}) {
+                      id
+                      tokenDayData {
+                        id
+                        dailyVolumeUSD
+                      }
+                      
+                    }
             `,
             }),
           }
         );
-        const liquidityData = await liquidityResponse.json();
+        // const liquidityData = await liquidityResponse.json();
 
-        const liquidityHistory = liquidityData.data.pairDayDatas.map(
-          (entry: PriceEntry) => ({
-            timestamp: parseInt(entry.date),
-            liquidity: parseFloat(entry.reserve0) + parseFloat(entry.reserve1),
-          })
-        );
-        setLiquidityHistory(liquidityHistory);
+        // const liquidityHistory = liquidityData.data.pairDayDatas.map(
+        //   (entry: PriceEntry) => ({
+        //     timestamp: parseInt(entry.date),
+        //     liquidity: parseFloat(entry.reserve0) + parseFloat(entry.reserve1),
+        //   })
+        // );
+        // setLiquidityHistory(liquidityHistory);
       } catch (error) {
         console.error("Error fetching liquidity history:", error);
       }
@@ -136,13 +141,13 @@ const WassupSRG = () => {
     <>
       <div>
         <h2>Price History</h2>
-        <ul>
+        {/* <ul>
           {priceHistory.map((entry: PriceEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Price: {entry.price}
             </li>
           ))}
-        </ul>
+        </ul> */}
 
         <h2>Volume History</h2>
         <ul>
@@ -154,13 +159,13 @@ const WassupSRG = () => {
         </ul>
 
         <h2>Liquidity History</h2>
-        <ul>
+        {/* <ul>
           {liquidityHistory.map((entry: PriceEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Liquidity: {entry.liquidity}
             </li>
           ))}
-        </ul>
+        </ul> */}
       </div>
     </>
   );
