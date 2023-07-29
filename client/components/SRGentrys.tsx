@@ -7,6 +7,8 @@ export const SRGentrys = () => {
   const [volumeHistory, setVolumeHistory] = useState([]);
   const [liquidityHistory, setLiquidityHistory] = useState([]);
   const [liquidityHistoryByHours, setLiquidityHistoryByHours] = useState([]);
+
+  //TODO create hook with config contrat and call it there
   const contractAddress = "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65";
 
   useEffect(() => {
@@ -22,7 +24,7 @@ export const SRGentrys = () => {
   const fetchContractCreationInfo = async (txHash: string) => {
     const provider = new JsonRpcProvider("https://bsc-dataseed.binance.org/");
     const contractCreationBlock = await provider.getTransactionReceipt(txHash);
-    console.log(contractCreationBlock?.blockNumber);
+    console.log(contractCreationBlock?.blockNumber); //26087006
   };
 
   const fetchMarketData = async () => {
@@ -45,7 +47,7 @@ export const SRGentrys = () => {
                     }
                     totalSupply
                   } 
-                    tokens(block: {number:24726990}) {
+                    tokens(block: {number:26087006}) {
                     tokenDayData {
                       id
                       totalLiquidityUSD
