@@ -203,7 +203,7 @@ export const SRGentrys = () => {
 
         <h2>Volume History</h2>
         <ul>
-          {volumeHistory.map((entry: PriceEntry) => (
+          {volumeHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Volume: {entry.volume}
             </li>

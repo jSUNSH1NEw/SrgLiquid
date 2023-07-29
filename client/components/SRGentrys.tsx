@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { ethers, JsonRpcProvider } from "ethers";
 
 export const SRGentrys = () => {
-  const [graphdata, setgraphData] = useState<PriceEntry[]>([]);
+  const [graphdata, setgraphData] = useState<HistoricalMarketEntry[]>([]);
   const [priceHistory, setPriceHistory] = useState([]);
   const [volumeHistory, setVolumeHistory] = useState([]);
   const [liquidityHistory, setLiquidityHistory] = useState([]);
@@ -86,7 +86,7 @@ export const SRGentrys = () => {
 
         <h2>Volume History</h2>
         <ul>
-          {volumeHistory.map((entry: PriceEntry) => (
+          {volumeHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Volume: {entry.volume}
             </li>

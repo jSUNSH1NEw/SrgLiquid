@@ -1,4 +1,4 @@
-interface PriceEntry {
+interface HistoricalMarketEntry {
   timestamp: string;
   price: string;
   date: string; 
