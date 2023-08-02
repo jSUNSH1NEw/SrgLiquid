@@ -6,7 +6,11 @@ interface HistoricalMarketEntry {
   volume: string
   liquidity: number
   reserveSRG: string
-  reserveAPE:string
+  reserveAPE: string
+  currentVolume:string
+  yesterdayVolume:string
+  dayVolume:string
+  
 }
 
 type SRGContractList = {

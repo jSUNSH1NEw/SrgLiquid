@@ -6,7 +6,7 @@ export const SRGentrys = () => {
   const [priceHistory, setPriceHistory] = useState([]);
   const [volumeHistory, setVolumeHistory] = useState([]);
   const [liquidityHistory, setLiquidityHistory] = useState([]);
-  // const [liquidityHistoryByHours, setLiquidityHistoryByHours] = useState([]);
+  const [liquidityHistoryByHours, setLiquidityHistoryByHours] = useState([]);
 
   //TODO create hook with config contrat and call it there
   const contractAddress = "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65";
@@ -19,6 +19,7 @@ export const SRGentrys = () => {
 
   useEffect(() => {
     fetchMarketData();
+    fetchLiquidityHistoryByHours();
   }, []);
 
   const fetchContractCreationInfo = async (txHash: string) => {
@@ -75,14 +76,89 @@ export const SRGentrys = () => {
       timestamp: new Date(parseInt(entry.date) * 1000).toLocaleString(),
       liquidity: parseFloat(entry.totalLiquidityUSD),
     }));
-    console.log(liquidityHistory);
     setLiquidityHistory(mapliquidityHistory as any);
   };
+
+  async function fetchLiquidityHistoryByHours() {
+    try {
+      // Fetch the liquidity history by hours using the provided API and query
+      const response = await fetch(
+        "https://api.thegraph.com/subgraphs/name/somemoecoding/surgeswap-v1-cg-bsc",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            query: `
+          {
+            tickers(id: "0x43c3ebafdf32909ac60e80ee34ae46637e743d65") {
+              liquidity_in_usd
+              target_volume
+            }
+          }
+        `,
+          }),
+        }
+      );
+
+      const data = await response.json();
+      const liquidityHistory = data.data.tickers;
+
+      // Calculate the desired time interval (24 hours)
+      const timeInterval = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+      // Initialize the previous day's target volume
+      let previousDayTargetVolume = 0;
+
+      // Calculate the timestamp for each liquidity history entry
+      let currentTime = Date.now();
+
+      // ANCHOR CG Api do not got timestamp
+      // Calculate yesterday's date
+      const yesterday = new Date();
+      const getYersterday = yesterday.setDate(yesterday.getDate() - 1);
+
+
+      // Calculate day volume for each liquidity history entry
+      const liquidityHistoryWithVolumes = liquidityHistory.map((entry: any) => {
+        const currentVolume = entry.target_volume;
+        const yesterdayEntry = liquidityHistory.find(
+          (e: any) => new Date(e.timestamp) < yesterday
+        );
+        const yesterdayVolume = yesterdayEntry
+          ? yesterdayEntry.target_volume
+          : 0;
+        const dayVolume = currentVolume - yesterdayVolume;
+        const currentTimestamp = new Date(currentTime);
+        const timestamp = new Date(currentTime - timeInterval).toLocaleDateString();
+        currentTime -= timeInterval;
+
+        const currentTargetVolume = entry.target_volume;
+        const dayVolume2 = currentTargetVolume - previousDayTargetVolume;
+
+        previousDayTargetVolume = currentTargetVolume;
+
+        return {
+          ...entry,
+          timestamp,
+          currentVolume,
+          yesterdayVolume,
+          dayVolume2,
+        };
+      });
+
+      // Set the liquidity history with volumes to the state
+      setLiquidityHistoryByHours(liquidityHistoryWithVolumes);
+    } catch (error) {
+      console.error("Error fetching liquidity history by hours:", error);
+    }
+  }
 
   return (
     <>
       <div>
-        <h2>Price History</h2>
+        <h2>Price History API V2</h2>
         <ul>
           {priceHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
@@ -91,7 +167,7 @@ export const SRGentrys = () => {
           ))}
         </ul>
 
-        <h2>Volume History</h2>
+        <h2>Volume History API V2</h2>
         <ul>
           {volumeHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
@@ -101,11 +177,22 @@ export const SRGentrys = () => {
           ))}
         </ul>
 
-        <h2>Liquidity History</h2>
+        <h2>Liquidity History API V2</h2>
         <ul>
           {liquidityHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Liquidity: {entry.liquidity}
+            </li>
+          ))}
+        </ul>
+
+        <h2>Liquidity History by hours API CG</h2>
+        <ul>
+          {liquidityHistoryByHours.map((entry: HistoricalMarketEntry) => (
+            <li key={entry.timestamp}>
+              Timestamp: {entry.timestamp}, CurrentVolume: {entry.currentVolume}
+              , Yesterday: {entry.yesterdayVolume} , dailyLiqudiity :{" "}
+              {entry.dailyVolumeToken}
             </li>
           ))}
         </ul>
