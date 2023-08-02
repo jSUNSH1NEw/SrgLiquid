@@ -21,6 +21,10 @@ a {
   }
   body {
     color: white;
-    background: black;
+    background: linear-gradient(
+      132deg,
+      #252525 0%,
+      rgba(59, 50, 116, 0.94) 100%
+    );
   }
 }
