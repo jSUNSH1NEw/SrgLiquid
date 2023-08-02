@@ -6,7 +6,7 @@ export const SRGentrys = () => {
   const [priceHistory, setPriceHistory] = useState([]);
   const [volumeHistory, setVolumeHistory] = useState([]);
   const [liquidityHistory, setLiquidityHistory] = useState([]);
-  const [liquidityHistoryByHours, setLiquidityHistoryByHours] = useState([]);
+  // const [liquidityHistoryByHours, setLiquidityHistoryByHours] = useState([]);
 
   //TODO create hook with config contrat and call it there
   const contractAddress = "0x43C3EBaFdF32909aC60E80ee34aE46637E743d65";
@@ -24,7 +24,7 @@ export const SRGentrys = () => {
   const fetchContractCreationInfo = async (txHash: string) => {
     const provider = new JsonRpcProvider("https://bsc-dataseed.binance.org/");
     const contractCreationBlock = await provider.getTransactionReceipt(txHash);
-    console.log(contractCreationBlock?.blockNumber); //26087006
+    // console.log(contractCreationBlock?.blockNumber); //26087006
   };
 
   const fetchMarketData = async () => {
@@ -43,66 +43,72 @@ export const SRGentrys = () => {
                       date
                       dailyTxns
                       dailyVolumeUSD
-                    
                     }
+                    liquidityUSD
+                    tradeVolumeUSD
                     totalSupply
                   } 
-                    tokens(block: {number:26087006}) {
-                    tokenDayData {
-                      id
-                      totalLiquidityUSD
-                      dailyVolumeUSD
-                      date
-                      dailyTxns
-                    }
-                  }
-                }
+                  }        
       `,
         }),
       }
     );
     const data = await response.json();
-    setgraphData(data);
+    // console.log(data); // First object from graph need to be hydrated
+    const SRGDatas = data.data.token.tokenDayData;
+    const totalSupply = parseFloat(data.data.token.totalSupply);
 
-    const mapMarketData = graphdata.map((entry: any) => ({
-      timestamp: parseInt(entry.date),
-      volume: parseFloat(entry.dailyVolumeToken),
+    const mapPriceData = SRGDatas.map((entry: any) => ({
+      timestamp: new Date(parseInt(entry.date) * 1000).toLocaleString(),
+      price: parseFloat(entry.dailyVolumeUSD) / totalSupply,
+    }));
+    setPriceHistory(mapPriceData as any);
+
+    const mapMarketData = SRGDatas.map((entry: any) => ({
+      timestamp: new Date(parseInt(entry.date) * 1000).toLocaleString(),
+      volume: parseFloat(entry.dailyVolumeUSD),
+      liquidity: parseFloat(entry.totalLiquidityUSD),
     }));
     setVolumeHistory(mapMarketData as any);
 
-    ///TODO work with data
-    console.log(volumeHistory);
+    const mapliquidityHistory = SRGDatas.map((entry: any) => ({
+      timestamp: new Date(parseInt(entry.date) * 1000).toLocaleString(),
+      liquidity: parseFloat(entry.totalLiquidityUSD),
+    }));
+    console.log(liquidityHistory);
+    setLiquidityHistory(mapliquidityHistory as any);
   };
 
   return (
     <>
       <div>
         <h2>Price History</h2>
-        {/* <ul>
-          {priceHistory.map((entry: PriceEntry) => (
+        <ul>
+          {priceHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Price: {entry.price}
             </li>
           ))}
-        </ul> */}
+        </ul>
 
         <h2>Volume History</h2>
         <ul>
           {volumeHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
-              Timestamp: {entry.timestamp}, Volume: {entry.volume}
+              Timestamp: {entry.timestamp}, Volume: {entry.volume} : liquidity:{" "}
+              {entry.liquidity}
             </li>
           ))}
         </ul>
 
         <h2>Liquidity History</h2>
-        {/* <ul>
-          {liquidityHistory.map((entry: PriceEntry) => (
+        <ul>
+          {liquidityHistory.map((entry: HistoricalMarketEntry) => (
             <li key={entry.timestamp}>
               Timestamp: {entry.timestamp}, Liquidity: {entry.liquidity}
             </li>
           ))}
-        </ul> */}
+        </ul>
       </div>
     </>
   );
