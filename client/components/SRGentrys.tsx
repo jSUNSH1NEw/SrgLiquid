@@ -73,7 +73,7 @@ export const SRGentrys = () => {
           <Stack
             sx={{
               display: "flex",
-              flexDirection: { xs: "column", xl: "row" },
+              flexDirection: { xs: "column", lg: "row", xl: "row" },
             }}
           >
             <Box
