@@ -19,8 +19,8 @@ export const SRGentrys = () => {
     liquidityHistoryByHours,
   } = useMarketData();
 
-  const handleClick = () => {
-    window.location.href = "https://github.com/jSUNSH1NEw/SrgLiquid";
+  const handleGitRedirect = () => {
+    window.open("https://github.com/jSUNSH1NEw/SrgLiquid", "_blank");
   };
 
   return (
@@ -50,7 +50,12 @@ export const SRGentrys = () => {
           </Typography>
           <Box width={350} height={7.5} bgcolor="white" mt={1} />
         </Stack>
-        <Box sx={{ p: "50px 50px 50px 0px" }}>
+        <Box
+          sx={{ p: "50px 50px 50px 0px", cursor: "pointer" }}
+          onClick={() => {
+            handleGitRedirect();
+          }}
+        >
           <Image src={GitIcon} width={40} height={40} alt="GitHub Icon" />
         </Box>
       </Grid>
@@ -79,9 +84,13 @@ export const SRGentrys = () => {
                 width: "25vw",
                 flexDirection: "column",
                 border: "1px solid transparent",
-                borderRadius: "25px 0px 25px 0px",
-                padding: "50px",
-                ml: "0px",
+                borderRadius: "25px 0px 0px 0px",
+                padding: "30px 0px 0px 20px",
+                "&:hover": {
+                  backgroundColor: "rgba(13, 203, 148, 0.50)",
+                  transition: "0.5s",
+                  transitionDelay: "0.2s",
+                },
               }}
             >
               <h2>Price History</h2>
@@ -90,7 +99,6 @@ export const SRGentrys = () => {
                 sx={{
                   overflow: "auto",
                   maxHeight: "500px",
-
                   scrollbarWidth: "thin",
                   "&::-webkit-scrollbar": {
                     width: "0.5em",
@@ -101,7 +109,7 @@ export const SRGentrys = () => {
                 }}
               >
                 {priceHistory.map((entry: HistoricalMarketEntry) => (
-                  <ListItem key={entry.timestamp} sx={{}}>
+                  <ListItem key={entry.timestamp}>
                     Timestamp: {entry.timestamp} <br></br> Price: {entry.price}
                   </ListItem>
                 ))}
@@ -116,9 +124,14 @@ export const SRGentrys = () => {
                 flexDirection: "column",
                 border: "1px solid transparent",
                 borderRadius: "25px 25px 0px 0px",
-                padding: "50px",
+                padding: "30px 0px 0px 20px",
                 ml: "100px",
                 mr: "100px",
+                "&:hover": {
+                  backgroundColor: "rgba(240, 169, 32, 0.62)",
+                  transition: "0.5s",
+                  transitionDelay: "0.2s",
+                },
               }}
             >
               <h2>Volume History</h2>
@@ -155,8 +168,13 @@ export const SRGentrys = () => {
                 width: "25vw",
                 flexDirection: "column",
                 border: "1px solid transparent",
-                borderRadius: "0px 25px 0px 25px",
-                padding: "50px",
+                borderRadius: "0px 25px 0px 0px",
+                padding: "30px 0px 0px 20px",
+                "&:hover": {
+                  backgroundColor: "rgba(93, 99, 255, 0.50)",
+                  transition: "0.5s",
+                  transitionDelay: "0.2s",
+                },
               }}
             >
               <h2>Liquidity History</h2>
@@ -188,13 +206,13 @@ export const SRGentrys = () => {
 
         <Grid
           sx={{
-            mt: "20px",
-            width: "100%",
-            displa: "flex",
+            width: "auto",
+            display: "flex",
             alignItem: "center",
+            justifyContent: "flex-start",
           }}
         >
-          <Container sx={{ display: "flex", mt: "50px" }}>
+          <Container sx={{ display: "flex", mt: "100px" }}>
             <Box
               sx={{
                 backgroundColor: "rgba(54, 54, 54, 0.23)",
@@ -202,7 +220,8 @@ export const SRGentrys = () => {
                 backdropFilter: "blur(25px)",
                 border: "1px solid transparent",
                 borderRadius: "25px 0px 0px 25px",
-                padding: "50px",
+                padding: "30px 0px 0px 20px",
+                width: "65vw",
                 alignItems: "center",
               }}
             >
@@ -212,8 +231,7 @@ export const SRGentrys = () => {
                 sx={{
                   overflow: "auto",
                   maxHeight: "500px",
-                  padding: "150px",
-                  width: "50vw",
+                  p: "20px 20px 0px 20px",
                   scrollbarWidth: "thin",
                   "&::-webkit-scrollbar": {
                     width: "0.5em",
