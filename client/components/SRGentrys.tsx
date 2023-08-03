@@ -48,12 +48,12 @@ export const SRGentrys = () => {
           >
             SURGE / APE History
           </Typography>
-          <Box width={350} height={7.5} bgcolor="white" mt={1} />
+          <Box width={350} height={7.5} bgcolor="white" />
         </Stack>
         <Box
           sx={{ p: "50px 50px 50px 0px", cursor: "pointer" }}
           onClick={() => {
-            handleGitRedirect();
+            handleGitRedirect(); //TODO replace by Link component
           }}
         >
           <Image src={GitIcon} width={40} height={40} alt="GitHub Icon" />
@@ -94,7 +94,8 @@ export const SRGentrys = () => {
               }}
             >
               <h2>Price History</h2>
-              <h3> (API V2) </h3>
+              <Box width={50} height={3.5} bgcolor="white" mb={4} />
+
               <List
                 sx={{
                   overflow: "auto",
@@ -135,7 +136,7 @@ export const SRGentrys = () => {
               }}
             >
               <h2>Volume History</h2>
-              <h3> (API V2) </h3>
+              <Box width={50} height={3.5} bgcolor="white" mb={4} />
               <List
                 sx={{
                   overflow: "auto",
@@ -178,7 +179,7 @@ export const SRGentrys = () => {
               }}
             >
               <h2>Liquidity History</h2>
-              <h3> (API V2) </h3>
+              <Box width={50} height={3.5} bgcolor="white" mb={4} />
               <List
                 sx={{
                   overflow: "auto",
@@ -225,8 +226,8 @@ export const SRGentrys = () => {
                 alignItems: "center",
               }}
             >
-              <h2>Liquidity History by hours</h2>
-              <h3>(API CG)</h3>
+              <h2>Liquidity by hours</h2>
+              <Box width={150} height={3.5} bgcolor="white" mb={4} />
               <List
                 sx={{
                   overflow: "auto",
@@ -252,7 +253,7 @@ export const SRGentrys = () => {
                   >
                     Timestamp: {entry.timestamp}, <br></br>Volume :{" "}
                     {entry.currentVolume}, <br></br>Yesterday at same hour :{" "}
-                    {entry.yesterdayVolume} , <br></br>
+                    {entry.yesterdayVolume}
                   </ListItem>
                 ))}
               </List>
