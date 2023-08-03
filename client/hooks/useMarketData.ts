@@ -41,6 +41,35 @@ const useMarketData = () => {
         const SRGDatas = data.data.token.tokenDayData;
         const totalSupply = parseFloat(data.data.token.totalSupply);
 
+        //////////////////////////////////////////////////////::
+
+        const mapHourlyVolumeData = SRGDatas.flatMap((entry: any) => {
+          const date = new Date(parseInt(entry.date) * 1000);
+          const startOfDay = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          const hours = Array.from({ length: 24 }, (_, i) => i);
+
+          return hours.map((hour) => {
+            const startOfHour = new Date(startOfDay.getTime() + hour * 60 * 60 * 1000);
+            const endOfHour = new Date(startOfDay.getTime() + (hour + 1) * 60 * 60 * 1000);
+
+            // Filter entries within the current hour
+            const entriesInHour = SRGDatas.filter((entry:any) => {
+              const entryDate = new Date(parseInt(entry.date) * 1000);
+              return entryDate >= startOfHour && entryDate < endOfHour;
+            });
+
+          // Calculate the sum of volume for the hour
+          const currentVolume = entriesInHour.reduce((sum:any, entry:any) => sum + parseFloat(entry.dailyVolumeUSD), 0);
+
+    return {
+      timestamp: startOfHour.toLocaleString(),
+      currentVolume,
+    };
+  });
+});
+        setLiquidityHistoryByHours(mapHourlyVolumeData)
+        //////////////////////////////////////////////////////::
+
         const mapPriceData = SRGDatas.map((entry:any) => ({
           timestamp: new Date(parseInt(entry.date) * 1000).toLocaleString(),
           price: parseFloat(entry.dailyVolumeUSD) / totalSupply,
@@ -62,9 +91,13 @@ const useMarketData = () => {
       } catch (error) {
         console.error("Error fetching market data:", error);
       }
+
+      
     };
 
     fetchDataV1();
+
+    
 
     //ANCHOR Async call for  API V2 
     async function fetchLiquidityHistoryByHoursV2() {
@@ -102,30 +135,14 @@ const useMarketData = () => {
       // Calculate the timestamp for each liquidity history entry
       let currentTime = Date.now();
 
-      // ANCHOR CG Api do not got timestamp
-      // Calculate yesterday's date
+      // ANCHOR CG Api do not got timestamp 
+      //ANCHOR V2 get date
       const yesterday = new Date();
       const getYersterday = yesterday.setDate(yesterday.getDate() - 1);
 
       // Calculate day volume for each liquidity history entry
       const liquidityHistoryWithVolumes = liquidityHistory.map((entry: any) => {
         const currentVolume = entry.target_volume;
-
-        //ANCHOR no timestamp from apiV2
-
-        //The volume provided for the tickers is cumulative,
-        // so subtract the current volume from the volume 24 hours ago.
-        
-        // const yesterdayEntry = liquidityHistory.find(
-        //   (e: any) => new Date(e.timestamp) < yesterday
-        // );
-        // const yesterdayVolume = yesterdayEntry
-        //   ? yesterdayEntry.target_volume
-        //   : 0;
-        
-        //ANCHOR Not working
-        // const dayVolume = currentVolume - yesterdayVolume;
-        // const currentTimestamp = new Date(currentTime);
         const timestamp = new Date(
           currentTime - timeInterval
         ).toLocaleDateString();
@@ -146,7 +163,7 @@ const useMarketData = () => {
       });
 
       // Set the liquidity history with volumes to the state
-      setLiquidityHistoryByHours(liquidityHistoryWithVolumes);
+      // setLiquidityHistoryByHours(liquidityHistoryWithVolumes);
     } catch (error) {
       console.error("Error fetching liquidity history by hours:", error);
     }

@@ -250,10 +250,9 @@ export const SRGentrys = () => {
                       border: " solid 2px white",
                     }}
                   >
-                    Timestamp: {entry.timestamp}, <br></br> CurrentVolume:{" "}
-                    {entry.currentVolume}, <br></br>Yesterday:{" "}
-                    {entry.yesterdayVolume} , <br></br> dailyLiquidity :{" "}
-                    {entry.dailyVolumeToken}
+                    Timestamp: {entry.timestamp}, <br></br>Volume :{" "}
+                    {entry.currentVolume}, <br></br>Yesterday at same hour :{" "}
+                    {entry.yesterdayVolume} , <br></br>
                   </ListItem>
                 ))}
               </List>
