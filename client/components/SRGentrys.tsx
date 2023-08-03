@@ -126,8 +126,11 @@ export const SRGentrys = () => {
                 border: "1px solid transparent",
                 borderRadius: "25px 25px 0px 0px",
                 padding: "30px 0px 0px 20px",
-                ml: "100px",
-                mr: "100px",
+                m: {
+                  xs: "100px 0px 100px 0px",
+                  lg: "0px 0px 0px 00px",
+                  xl: "0px 100px 0px 100px",
+                },
                 "&:hover": {
                   backgroundColor: "rgba(240, 169, 32, 0.62)",
                   transition: "0.5s",
